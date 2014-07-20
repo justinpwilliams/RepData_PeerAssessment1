@@ -1,20 +1,87 @@
+Personal Activity Monitoring Analysis: Reproducible Research Project 1
+========================================================
 # Reproducible Research: Peer Assessment 1
-
+```{r setoptions, echo = FALSE}
+opts_chunks$set(echo = TRUE)
+```
+This is an analysis of data from personal activity monitoring devices. It is being
+completed as project for the Reproducible Research course offered by Johns
+Hopkins through Coursera.
 
 ## Loading and preprocessing the data
+The source data is stored as a zip file at 
+https://d396qusza40orc.cloudfront.net/repdata%2Fdata%2Factivity.zip
 
+We will download the file to the "data" directory, unzip the file, and store the 
+contained csv as a data frame.
+```{r loadingData, echo=TRUE}
+url <- "https://d396qusza40orc.cloudfront.net/repdata%2Fdata%2Factivity.zip"
+download.file(url, "data/activity.zip", method = "curl")
+unzip("data/activity.zip")
+activity <- read.csv("activity.csv")
+```
 
+We need to transform the "date" field to be represented as a date for later in
+the analysis.
+```{r transformingDate}
+activity$date <- as.POSIXct(activity$date)
+```
 
+Also, we will transform the "interval" variable to a factor for analysis.
+```{r transformInterval}
+activity$interval <- as.factor(activity$interval)
+```
 ## What is mean total number of steps taken per day?
+For this part, we will ignore missing values, and reconsider them later.
 
+To compute summary statistics based on total steps by day, let's create a data 
+frame that contains the sum of all steps by day.
+```{r sumByDay}
+sums <- aggregate(steps ~ date, data = activity, sum)
+```
 
+Now we'll generate a histogram of those sums. I prefer the aesthetics of ggplot2
+, so we will load that library.
+```{r histogramTotalStepsByDay}
+library(ggplot2)
+qplot(sums$steps) + xlab("Sum of steps by day")
+```
+
+Now let's find the mean and median of the sum of steps by day.
+```{r meanandmedian}
+dailymean <- mean(sums$steps)
+dailymedian <- median(sums$steps)
+```
+
+The mean of total steps per day is `r dailymean` and the median is `r dailymedian`.
 
 ## What is the average daily activity pattern?
+Let's see how steps vary over the time intervals by day.
+```{r plotOfStepsByInterval}
+ggplot(meansByInt, aes(as.integer(interval),steps)) + geom_line()
+```
 
-
+From the time series it appears that the 
 
 ## Imputing missing values
 
 
 
 ## Are there differences in activity patterns between weekdays and weekends?
+
+
+
+This is an R Markdown document. Markdown is a simple formatting syntax for authoring web pages (click the **Help** toolbar button for more details on using R Markdown).
+
+When you click the **Knit HTML** button a web page will be generated that includes both content as well as the output of any embedded R code chunks within the document. You can embed an R code chunk like this:
+
+```{r}
+summary(cars)
+```
+
+You can also embed plots, for example:
+
+```{r fig.width=7, fig.height=6}
+plot(cars)
+```
+
